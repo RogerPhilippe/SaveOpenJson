@@ -7,6 +7,8 @@ public class Person {
     private String mLastname;
     private int mAge;
 
+    public Person(){ }
+
     private Person(Long mId, String mName, String mLastname, int mAge) {
         this.mId = mId;
         this.mName = mName;
@@ -14,7 +16,7 @@ public class Person {
         this.mAge = mAge;
     }
 
-    public static class Builder {
+    static class Builder {
 
         private Long id;
         private String name;

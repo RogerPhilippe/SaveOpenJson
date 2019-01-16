@@ -1,5 +1,7 @@
 package com.example.rpereira.saveopenjson;
 
+import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -22,13 +24,11 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText medtAge;
 
-    private Button mbtnSave;
-
-    private Button mbtnOpen;
-
     private String json = null;
 
     private Gson gson = null;
+
+    public static final String PREFS_NAME = "PersonJsonSave";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +41,9 @@ public class MainActivity extends AppCompatActivity {
 
         medtAge = findViewById(R.id.idedtAge);
 
-        mbtnSave = findViewById(R.id.idbtnSave);
+        Button mbtnSave = findViewById(R.id.idbtnSave);
 
-        mbtnOpen = findViewById(R.id.idbtnOpen);
+        Button mbtnOpen = findViewById(R.id.idbtnOpen);
 
         mbtnSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
                 if(!medtName.getText().toString().isEmpty() && !medtLastname.getText().toString().isEmpty() &&
                         !medtAge.getText().toString().isEmpty()) {
 
+                    @SuppressLint("SimpleDateFormat")
                     DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
                     Date date = new Date();
                     Long dateTime = Long.parseLong(dateFormat.format(date));
@@ -68,10 +69,53 @@ public class MainActivity extends AppCompatActivity {
 
                     gson = new Gson();
                     json = gson.toJson(person);
-                    Log.i("JSON", "In Json: "+json);
+
+                    if (!json.isEmpty()) {
+
+                        Log.i("JSON", "In Json: "+json);
+
+                        Toast.makeText(MainActivity.this, "Json salvo.", Toast.LENGTH_SHORT).show();
+
+                        // Save Prefs
+                        // We need an Editor object to make preference changes.
+                        // All objects are from android.context.Context
+                        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putString("person", json);
+
+                        // Commit the edits.
+                        editor.apply();
+
+                    } else {
+                        Toast.makeText(MainActivity.this, "Json está vazio!", Toast.LENGTH_SHORT).show();
+                    }
+
 
                 } else {
                     Toast.makeText(MainActivity.this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+        mbtnOpen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // Restore preferences
+                SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                String jsonRecovered = settings.getString("person", "");
+
+                gson = new Gson();
+
+                Person person = gson.fromJson(jsonRecovered, Person.class);
+
+                if(person != null) {
+
+                    medtName.setText(person.getmName());
+                    medtLastname.setText(person.getmLastname());
+                    medtAge.setText(String.valueOf(person.getmAge()));
+
                 }
 
             }
