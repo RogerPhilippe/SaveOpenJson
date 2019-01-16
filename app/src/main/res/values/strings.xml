@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">SaveOpenJson</string>
+    <string name="title_main">Save Load Json</string>
+    <string name="label_name">Nome</string>
+    <string name="label_sobrenome">Sobrenome</string>
+    <string name="label_idade">Idade</string>
+    <string name="label_btn_save">Save</string>
+    <string name="label_btn_open">Open</string>
+</resources>
